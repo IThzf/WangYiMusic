@@ -1,0 +1,57 @@
+<android.support.v7.widget.Toolbar
+    android:id="@+id/toolbar_dynamicdetail"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:background="#d81e06"
+    app:theme="@style/AppTheme"
+    app:contentInsetStart="0dp"
+    app:contentInsetLeft="0dp"
+    app:contentInsetEnd="0dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:id="@+id/dynamicdetail_back">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/singPicture"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/back"
+                />
+        </LinearLayout>
+
+
+            <TextView
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="动态"
+                android:textSize="20dp"
+                android:textColor="#e6e6e6"
+                android:layout_weight="1"
+                />
+
+
+        <LinearLayout
+            android:layout_width="45dp"
+            android:layout_height="match_parent"
+            android:id="@+id/share"
+            >
+            <ImageView
+                android:id="@+id/menu"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/detail_menu_white" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.v7.widget.Toolbar>

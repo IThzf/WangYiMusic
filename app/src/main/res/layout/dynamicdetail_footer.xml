@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffff">
+
+    <LinearLayout
+        android:id="@+id/dynamic_detail_footer"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:orientation="horizontal"
+
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="bottom"
+            android:paddingTop="10dp">
+
+            <EditText
+
+                android:id="@+id/dynamic_detail_et_footer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="8dp"
+                android:background="@null"
+                android:hint="写评论"
+                android:maxLines="3"
+                android:paddingTop="10dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="4dp"
+                android:textCursorDrawable="@null"
+                android:textSize="15dp" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/dynamicdetail_rl_praise_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/dynamicdetail_footer_praise"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/zan_gray_unselected" />
+
+            <TextView
+                android:id="@+id/dynamicdetail_footer_praiseNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="14dp"
+                android:layout_alignTop="@+id/dynamicdetail_footer_praise"
+                android:layout_toEndOf="@+id/dynamicdetail_footer_praise"
+                android:gravity="center"
+                android:text="666"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toEndOf="@+id/dynamicdetail_footer_praiseNumber"
+                android:src="@drawable/share_gray" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv_dynamicdetail_send"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:textColor="#cdcdcd"
+            android:text="发送"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:orientation="vertical">
+    </LinearLayout>
+</LinearLayout>
