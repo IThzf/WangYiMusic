@@ -4,4 +4,21 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="login_pho">手机号登录</string>
+    <string name="pho_register">手机号注册</string>
+    <string name="register_pho">注册</string>
+    <string name="tryOn">游客试用</string>
+    <string name="input_pho">请输入手机号</string>
+    <string name="set_password">设置登录密码，不少于6位</string>
+    <string name="input_pass">请输入密码</string>
+    <string name="login">登录</string>
+    <string name="next_step">下一步</string>
+
+    <string name="rank">等级</string>
+    <string name="sign_in">签到</string>
+    <string name="user_name">用户名</string>
+
+    <string name="chang_account">切换帐号</string>
+    <string name="setting">设置</string>
+    <string name="quit">退出</string>
 </resources>

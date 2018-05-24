@@ -2,6 +2,7 @@ package com.task.android.wangyiyun.fragement;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.task.android.wangyiyun.R;
+import com.task.android.wangyiyun.activity.DynamicDetailActivity;
 import com.task.android.wangyiyun.adapter.DynamicAdapter;
 import com.task.android.wangyiyun.bean.Dynamic;
 
@@ -74,6 +76,7 @@ public class FriendCircleFragement extends Fragment {
 
     private void initDynamicInfo() {
 
+        dynamicsList = new ArrayList<>();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -115,5 +118,13 @@ public class FriendCircleFragement extends Fragment {
         // 设置item增加和移除的动画
         dynamic_rv.setItemAnimator(new DefaultItemAnimator());
         ((SimpleItemAnimator)dynamic_rv.getItemAnimator()).setSupportsChangeAnimations(false);
+
+        dynamicAdapter.setOnItemClickListener(new DynamicAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Intent intent_DynamicDetail = new Intent(getActivity(), DynamicDetailActivity.class);
+                startActivity(intent_DynamicDetail);
+            }
+        });
     }
 }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/g1">
+        <item
+            android:id="@+id/message"
+            android:icon="@drawable/topmenu_icn_msg"
+            android:title="我的消息"/>
+        <item
+            android:id="@+id/vip"
+            android:icon="@drawable/topmenu_icn_vip"
+            android:title="VIP会员"/>
+        <item
+            android:id="@+id/store"
+            android:icon="@drawable/topmenu_icn_store"
+            android:title="商城"/>
+        <item
+            android:id="@+id/free"
+            android:icon="@drawable/topmenu_icn_free"
+            android:title="在线听歌免流量"/>
+    </group>
+    <item
+        android:id="@+id/skin"
+        android:icon="@drawable/topmenu_icn_skin"
+        android:title="个性换肤"/>
+    <item
+        android:id="@+id/identify"
+        android:icon="@drawable/topmenu_icn_identify"
+        android:title="听歌识曲"/>
+    <item
+        android:id="@+id/time"
+        android:icon="@drawable/topmenu_icn_time"
+        android:title="定时播放"/>
+    <item
+        android:id="@+id/clock"
+        android:icon="@drawable/topmenu_icn_clock"
+        android:title="音乐闹钟"/>
+    <item
+        android:id="@+id/vehicle"
+        android:icon="@drawable/topmenu_icn_vehicle"
+        android:title="驾驶模式"/>
+    <item
+        android:id="@+id/cloud"
+        android:icon="@drawable/topmenu_icn_cloud"
+        android:title="音乐云盘"/>
+</menu>
