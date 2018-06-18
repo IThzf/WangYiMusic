@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.task.android.wangyiyun.R;
+import com.task.android.wangyiyun.activity.PlayMusicActivity;
 import com.task.android.wangyiyun.adapter.MusicListAdapter;
 
 import java.util.ArrayList;

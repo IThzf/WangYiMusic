@@ -199,7 +199,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="55dp">
+            android:layout_marginRight="25dp">
             <ImageButton
                 android:id="@+id/last_play_ib"
                 android:layout_width="70dp"
@@ -222,7 +222,12 @@
                 android:layout_height="fill_parent"
                 android:background="@drawable/ic_next" />
         </LinearLayout>
-
+        <ImageButton
+            android:id="@+id/list_play_ib"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/ic_list" />
     </LinearLayout>
 
 </RelativeLayout>
