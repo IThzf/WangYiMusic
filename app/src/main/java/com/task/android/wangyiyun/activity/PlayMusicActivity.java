@@ -1,8 +1,15 @@
 package com.task.android.wangyiyun.activity;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,15 +36,17 @@ import java.util.ArrayList;
  */
 
 public class PlayMusicActivity extends AppCompatActivity {
-    private ImageButton backmain_play_btn,share_play_btn,last_paly_btn,play_play_btn,pause_play_btn,next_play_btn;
+    private ImageButton backmain_play_btn,share_play_btn,last_paly_btn,play_play_btn,pause_play_btn,
+            next_play_btn,cycle_play_btn,single_play_btn,cele_btn,cancelcele_btn;
     private TextView musicname_play_text,musicauthor_play_text,time_play_text,alltime_play_text;
     private SeekBar mseekbar_play;
     private MediaPlayer mediaPlayer;
     private ArrayList<MusicMedia> myList;
-
     private int position;
     private int allNum;
     private Handler handler;
+    private boolean flag = false;
+    private int time = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +55,23 @@ public class PlayMusicActivity extends AppCompatActivity {
         InitPlay();
         InitView();
 
+        //耳机拔出时暂停播放
+        registerHeadsetPlugReceiver();
+
         backmain_play_btn.setOnClickListener(imgbtnListener);
         share_play_btn.setOnClickListener(imgbtnListener);
         last_paly_btn.setOnClickListener(imgbtnListener);
         play_play_btn.setOnClickListener(imgbtnListener);
         pause_play_btn.setOnClickListener(imgbtnListener);
         next_play_btn.setOnClickListener(imgbtnListener);
+        cycle_play_btn.setOnClickListener(imgbtnListener);
+        single_play_btn.setOnClickListener(imgbtnListener);
+        cele_btn.setOnClickListener(imgbtnListener);
+        cancelcele_btn.setOnClickListener(imgbtnListener);
 
         mseekbar_play.setOnSeekBarChangeListener(seekBarChangeListener);
+
+        mediaPlayer.setOnCompletionListener(new InnerOnCompletionListener());
 
     }
 
@@ -65,6 +83,10 @@ public class PlayMusicActivity extends AppCompatActivity {
         play_play_btn = (ImageButton)findViewById(R.id.play_play_ib);
         pause_play_btn = (ImageButton)findViewById(R.id.pause_play_ib);
         next_play_btn = (ImageButton)findViewById(R.id.next_play_ib);
+        cycle_play_btn = (ImageButton)findViewById(R.id.cycle_play_ib);
+        single_play_btn = (ImageButton)findViewById(R.id.single_play_ib);
+        cele_btn = (ImageButton)findViewById(R.id.cele1_ib);
+        cancelcele_btn = (ImageButton)findViewById(R.id.cele2_ib);
 
         musicname_play_text = (TextView) findViewById(R.id.musicname_play_tv);
         musicauthor_play_text = (TextView) findViewById(R.id.musicauthor_play_tv);
@@ -75,7 +97,7 @@ public class PlayMusicActivity extends AppCompatActivity {
 
         mediaPlayer = new MediaPlayer();
 
-        position = 1;
+        position = 0;
         allNum = 0;
 
         handler = new Handler();
@@ -84,6 +106,7 @@ public class PlayMusicActivity extends AppCompatActivity {
         musicauthor_play_text.setText(myList.get(position).getArtist());
         alltime_play_text.setText(toTime(myList.get(position).getTime()));
         mseekbar_play.setMax((int) myList.get(position).getTime());
+        mseekbar_play.getThumb().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
     }
 
@@ -122,35 +145,101 @@ public class PlayMusicActivity extends AppCompatActivity {
                 case R.id.next_play_ib:
                     nextMethod();
                     return;
+                case R.id.cycle_play_ib:
+                    cycleMethod();
+                    return;
+                case R.id.single_play_ib:
+                    singleMethod();
+                    return;
+                case R.id.cele1_ib:
+                    celeMethod();
+                    return;
+                case R.id.cele2_ib:
+                    cancelceleMethod();
+                    return;
+                case R.id.download_ib:
+                    downloadMethod();
+                    return;
+                case R.id.info_ib:
+                    infoMethod();
+                    return;
+                case R.id.options_ib:
+                    optionsMethod();
+                    return;
+                default:
+                    return;
+
             }
         }
     };
 
+    //收藏
+    private void celeMethod() {
+        cele_btn.setVisibility(View.GONE);
+        cancelcele_btn.setVisibility(View.VISIBLE);
+    }
+
+    //取消收藏
+    private void cancelceleMethod() {
+        cele_btn.setVisibility(View.VISIBLE);
+        cancelcele_btn.setVisibility(View.GONE);
+    }
+
+    //下载
+    private void downloadMethod() {
+    }
+
+    //信息
+    private void infoMethod() {
+    }
+
+    //选项按钮事件
+    private void optionsMethod() {
+    }
+
+    //从列表循环变为单曲循环
+    private void cycleMethod() {
+        flag = true;
+        cycle_play_btn.setVisibility(View.GONE);
+        single_play_btn.setVisibility(View.VISIBLE);
+        Toast.makeText(PlayMusicActivity.this,"单曲循环",Toast.LENGTH_LONG).show();
+    }
+
+    //从单曲循环变为列表循环
+    private void singleMethod() {
+        flag = false;
+        cycle_play_btn.setVisibility(View.VISIBLE);
+        single_play_btn.setVisibility(View.GONE);
+        Toast.makeText(PlayMusicActivity.this,"列表循环",Toast.LENGTH_LONG).show();
+    }
+
     //下一首
     private void nextMethod() {
-        if (position == myList.size())
+        if (position == myList.size()-1)
         {
-            position = 1;
+            position = 0;
         }
         else
         {
             position = position + 1;
         }
         mediaPlayer.stop();
+        time = 0;
         playMethod(position);
     }
 
     //上一首
     private void lastMethod() {
-        if (position == 1)
+        if (position == 0)
         {
-            position = myList.size();
+            position = myList.size()-1;
         }
         else
         {
             position = position - 1;
         }
         mediaPlayer.stop();
+        time = 0;
         playMethod(position);
     }
 
@@ -160,6 +249,8 @@ public class PlayMusicActivity extends AppCompatActivity {
 
     //返回上一页
     private void backmainMethod() {
+        time = mediaPlayer.getCurrentPosition();
+        finish();
     }
 
     //播放暂停
@@ -169,6 +260,7 @@ public class PlayMusicActivity extends AppCompatActivity {
 
         if (mediaPlayer.isPlaying()){
             mediaPlayer.pause();
+            time = mediaPlayer.getCurrentPosition();
         }
     }
 
@@ -186,6 +278,7 @@ public class PlayMusicActivity extends AppCompatActivity {
                 Log.i("TAG", "scanAudioFiles: " + position);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
+                mediaPlayer.seekTo(time);
                 handler.post(updateThread);
 
             } catch (Exception e) {
@@ -198,6 +291,21 @@ public class PlayMusicActivity extends AppCompatActivity {
         }
     }
 
+
+    private final class InnerOnCompletionListener implements MediaPlayer.OnCompletionListener{
+
+        @Override
+        public void onCompletion(MediaPlayer mediaPlayer) {
+            time = 0;
+            if (flag)
+            {
+                playMethod(position);
+            }else {
+                nextMethod();
+            }
+
+        }
+    }
 
 
     //设置歌曲时间格式
@@ -228,10 +336,7 @@ public class PlayMusicActivity extends AppCompatActivity {
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
             time_play_text.setText(toTime(seekBar.getProgress()));
-            if (seekBar.getProgress() == myList.get(position).getTime())
-            {
-                nextMethod();
-            }
+
         }
 
         @Override
@@ -243,8 +348,29 @@ public class PlayMusicActivity extends AppCompatActivity {
         public void onStopTrackingTouch(SeekBar seekBar) {
             int progress = seekBar.getProgress();
             mediaPlayer.seekTo(progress);
+
         }
     };
+
+    private void registerHeadsetPlugReceiver() {
+        IntentFilter intentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        registerReceiver(headsetPlugReceiver, intentFilter);
+    }
+
+    private BroadcastReceiver headsetPlugReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
+                pauseMethod();
+            }
+        }
+
+    };
+
+
+
 
     //动态获取权限
     @Override

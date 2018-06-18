@@ -46,14 +46,6 @@
 
         </activity>
 
-        <activity android:name=".activity.PlayMusicActivity">
-
-        </activity>
-
-
-
-
-
 
     </application>
 
