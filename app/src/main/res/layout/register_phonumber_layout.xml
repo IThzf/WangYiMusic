@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="30sp"
+        android:paddingBottom="10sp"
+        android:background="@color/colorRed">
+        <Button
+            android:id="@+id/backButtonRegister"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10sp"
+            android:background="@drawable/actionbar_back"
+            android:layout_marginStart="10sp" />
+        <TextView
+            android:id="@+id/registerOrChange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:typeface="normal"
+            android:textColor="@color/colorNetWhite"
+            android:textSize="18sp"
+            android:fontFamily="cursive"
+            android:layout_marginLeft="10sp"
+            android:layout_marginStart="10sp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/phone_number" />
+            <EditText
+                android:id="@+id/editPhoRegister"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15sp"
+                android:hint="@string/input_pho"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/password" />
+            <EditText
+                android:id="@+id/editSetpassRegister"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:layout_marginBottom="15sp"
+                android:hint="@string/set_password"/>
+        </LinearLayout>
+        <Button
+            android:id="@+id/nextStepRegister"
+            android:layout_width="290dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_bg_pressed"
+            android:layout_marginBottom="15sp"
+            android:text="@string/next_step"
+            android:textColor="@color/colorNetWhite" />
+    </LinearLayout>
+</LinearLayout>

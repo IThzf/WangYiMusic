@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/ic_blackground" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="48dp">
+            <ImageButton
+                android:id="@+id/backmain_play_ib"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/ic_back" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginLeft="40dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/musicname_play_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="10dp"
+
+                    android:text="music"
+                    android:textColor="#ffffff"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/musicauthor_play_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="author"
+                    android:textColor="#ffffff"
+                    android:textSize="15dp" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/share_play_ib"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/ic_share" />
+        </RelativeLayout>
+
+        <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/colorGray"/>
+
+        <RelativeLayout
+            android:id="@+id/play_disc"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center|center_vertical">
+
+
+            <ImageView
+                android:layout_width="185dp"
+                android:layout_height="185dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="115dp"
+                android:src="@drawable/ic_music"
+                android:id="@+id/imageView3" />
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="280dp"
+                android:layout_height="280dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="135dp"
+                android:src="@drawable/ic_disc" />
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_alignEnd="@+id/imageView3"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_needle" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_above="@+id/seek_ll"
+        android:padding="10dp">
+        <ImageButton
+            android:id="@+id/cele1_ib"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginRight="50dp"
+            android:background="@drawable/ic_cele1" />
+        <ImageButton
+            android:id="@+id/cele2_ib"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginRight="50dp"
+            android:background="@drawable/ic_cele2"
+            android:visibility="gone"/>
+        <ImageButton
+            android:id="@+id/download_ib"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginRight="25dp"
+            android:background="@drawable/ic_download" />
+        <ImageButton
+            android:id="@+id/info_ib"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="25dp"
+            android:background="@drawable/ic_info" />
+        <ImageButton
+            android:id="@+id/options_ib"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="50dp"
+            android:background="@drawable/ic_options" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/seek_ll"
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_above="@+id/play_ll">
+
+        <TextView
+            android:id="@+id/time_play_tv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/colorWhite"
+            android:text="00:00"
+            android:textSize="10sp"/>
+
+        <SeekBar
+            android:id="@+id/mseekbar_play_sb"
+            android:layout_width="285dp"
+            android:layout_height="30dp"
+            android:maxHeight="2dp"
+            android:minHeight="2dp"
+            android:progressDrawable="@drawable/seekbar_bg"/>
+
+        <TextView
+            android:id="@+id/alltime_play_tv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/colorWhite"
+            android:text="00:00"
+            android:textSize="10sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/play_ll"
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+        <ImageButton
+            android:id="@+id/cycle_play_ib"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="25dp"
+            android:background="@drawable/ic_cycle" />
+        <ImageButton
+            android:id="@+id/single_play_ib"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="25dp"
+            android:background="@drawable/ic_single"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="55dp">
+            <ImageButton
+                android:id="@+id/last_play_ib"
+                android:layout_width="70dp"
+                android:layout_height="fill_parent"
+                android:background="@drawable/ic_last" />
+            <ImageButton
+                android:id="@+id/play_play_ib"
+                android:layout_width="70dp"
+                android:layout_height="fill_parent"
+                android:background="@drawable/ic_play" />
+            <ImageButton
+                android:id="@+id/pause_play_ib"
+                android:layout_width="70dp"
+                android:layout_height="fill_parent"
+                android:background="@drawable/ic_pause"
+                android:visibility="gone"/>
+            <ImageButton
+                android:id="@+id/next_play_ib"
+                android:layout_width="70dp"
+                android:layout_height="fill_parent"
+                android:background="@drawable/ic_next" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

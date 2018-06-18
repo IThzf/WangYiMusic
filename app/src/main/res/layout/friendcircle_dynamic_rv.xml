@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="10dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginTop="18dp"
+    android:id="@+id/rl_item_dynamic">
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginRight="5dp"
+        android:id="@+id/item_dynamic_iv_userAvatar"/>
+
+    <RelativeLayout
+        android:id="@+id/relativeTop"
+        android:layout_width="240dp"
+        android:layout_height="40dp"
+        android:layout_toEndOf="@+id/item_dynamic_iv_userAvatar">
+
+        <TextView
+            android:layout_marginTop="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:text="存在"
+            android:textSize="14dp"
+            android:textColor="#0061b2"
+            android:gravity="center_vertical"
+            android:id="@+id/item_dynamic_tv_userName"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:gravity="center_vertical"
+            android:layout_toEndOf="@+id/item_dynamic_tv_userName"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="4dp"
+            android:id="@+id/item_dynamic_tv_contentType"
+            android:text="分享单曲"
+            android:textSize="14dp"
+            />
+        <TextView
+            android:layout_marginTop="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            android:text="8月3号"
+            android:textSize="12dp"
+            android:gravity="center_vertical"
+            android:layout_below="@+id/item_dynamic_tv_contentType"/>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="50dp"
+        android:layout_height="30dp"
+        android:text="+ 关注"
+        android:textSize="14dp"
+        android:textColor="#d81e06"
+        android:layout_toEndOf="@+id/relativeTop"
+        android:layout_alignParentEnd="true"
+        android:gravity="top|end"
+        android:id="@+id/item_dynamic_tv_focus"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14dp"
+        android:text="又是一年七月如常，物是人非各赴刑场。分分和和梦境一场，离离散散才看荒凉"
+        android:id="@+id/item_dynamic_tv_comment"
+        android:layout_below="@+id/relativeTop"
+        android:layout_toEndOf="@+id/item_dynamic_iv_userAvatar" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_below="@+id/item_dynamic_tv_comment"
+        android:layout_alignStart="@+id/item_dynamic_tv_comment"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="10dp"
+        android:id="@+id/ll_content"
+        android:orientation="vertical">
+        <ImageView
+            android:id="@+id/dynamic_comment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:text="——为你推荐全球好音乐"
+        android:textSize="12dp"
+        android:id="@+id/item_dynamic_tv_reason"
+        android:layout_below="@+id/ll_content"
+        android:layout_alignStart="@+id/ll_content"
+        android:layout_marginTop="10dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:orientation="horizontal"
+        android:layout_below="@+id/item_dynamic_tv_reason">
+        <LinearLayout
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginLeft="30dp"
+            android:gravity="center"
+            android:id="@+id/item_dynamic_ll_praise">
+            <ImageView
+                android:id="@+id/item_dynamic_iv_praise"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/zan_gray_unselected"
+                />
+            <TextView
+                android:layout_marginLeft="3dp"
+                android:id="@+id/item_dynamic_tv_praiseNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:textSize="12dp"
+                android:text="666"
+                android:gravity="center_vertical"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:id="@+id/item_dynamic_ll_comment">
+            <ImageView
+                android:id="@+id/item_dynamic_iv_comment"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/comment_gray"
+                />
+            <TextView
+                android:layout_marginLeft="3dp"
+                android:id="@+id/item_dynamic_tv_commentNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:textSize="12dp"
+                android:text="666"
+                android:gravity="center_vertical"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:id="@+id/item_dynamic_ll_share">
+            <ImageView
+                android:id="@+id/item_dynamic_iv_share"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/share_gray"
+                />
+            <TextView
+                android:layout_marginLeft="3dp"
+                android:id="@+id/item_dynamic_tv_shareNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:textSize="12dp"
+                android:text="666"
+                android:gravity="center_vertical"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:id="@+id/item_dynamic_ll_more"
+            android:layout_marginLeft="30dp"
+            android:gravity="center_vertical|end">
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:src="@drawable/detail_menu" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>
