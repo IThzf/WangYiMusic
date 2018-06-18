@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="242dp"
+            android:layout_marginTop="-10dp"
+            android:layout_marginBottom="-10dp"
+            android:src="@drawable/logintwo" />
+
+        <Button
+            android:id="@+id/login"
+            android:layout_width="290dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="15sp"
+            android:background="@drawable/btn_selector"
+            android:text="@string/login_pho"
+            android:textSize="18sp"
+            android:textColor="@color/colorRed" />
+
+        <Button
+            android:id="@+id/register"
+            android:layout_width="290dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="15sp"
+            android:background="@drawable/btn_selector"
+            android:text="@string/register_pho"
+            android:textSize="18sp"
+            android:textColor="@color/colorRed" />
+
+        <TextView
+            android:id="@+id/tryText01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/tryOn"
+            android:clickable="true"/>
+    </LinearLayout>
+
+
+ <!--   <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="其他登录方式-&#45;&#45;"
+        android:layout_gravity="center"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="暂未实现，请期待！"
+        android:layout_gravity="center"/>-->
+
+</LinearLayout>

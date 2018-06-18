@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/rv_item_commentlist">
+    <ImageView
+        android:id="@+id/commentlist_userAvatar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/wangyiiocn"/>
+
+    <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="38dp"
+        android:orientation="vertical"
+        android:id="@+id/ll_01"
+        android:gravity="center_vertical"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/commentlist_userAvatar">
+
+        <TextView
+            android:id="@+id/commentlist_tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            android:textSize="14dp"
+            android:text="存在"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/commentlist_tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="12dp"
+            android:gravity="center_vertical"
+            android:text="12:12"
+            android:textSize="10dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/dynamicdetail_rv_item_praise"
+        android:layout_alignParentEnd="true"
+        android:layout_width="70dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_alignParentRight="true"
+        android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="666"
+            android:textSize="14dp"
+            android:gravity="center_vertical"/>
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@drawable/zan_gray_unselected"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/commenlist_tv_comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14dp"
+        android:text="网易云音乐"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/ll_01"
+        android:layout_alignStart="@+id/ll_01"
+        android:layout_marginBottom="10dp"/>
+
+</RelativeLayout>
