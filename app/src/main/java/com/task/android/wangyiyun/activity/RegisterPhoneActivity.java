@@ -1,19 +1,27 @@
 package com.task.android.wangyiyun.activity;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.task.android.wangyiyun.R;
+import com.task.android.wangyiyun.fragement.FriendCircleFragement;
+import com.task.android.wangyiyun.util.DBManager;
+import com.task.android.wangyiyun.util.MyDatabaseHelper;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Created by xue on 2018/5/16.
@@ -52,56 +60,51 @@ public class RegisterPhoneActivity extends AppCompatActivity {
                 /*setEditable(phoneEditText,11,true);*/
 
                if(phoneNumber.length()<11 || phoneNumber.length()>11 ){
-                   Toast toast=Toast.makeText(getApplicationContext(),"请输入11位数字的手机号",Toast.LENGTH_SHORT);
+                   Toast toast= Toast.makeText(getApplicationContext(),"请输入11位数字的手机号", Toast.LENGTH_SHORT);
                    toast.show();
                }else if(setpassword.length()==0){
-                   Toast toast=Toast.makeText(getApplicationContext(),"请输入密码",Toast.LENGTH_SHORT);
+                   Toast toast= Toast.makeText(getApplicationContext(),"请输入密码", Toast.LENGTH_SHORT);
                    toast.show();
                }else if(setpassword.length()<6){
-                   Toast toast=Toast.makeText(getApplicationContext(),"请输入6位或以上的密码",Toast.LENGTH_SHORT);
+                   Toast toast= Toast.makeText(getApplicationContext(),"请输入6位或以上的密码", Toast.LENGTH_SHORT);
                    toast.show();
                }else{
-                   //验证码验证 需要手机号啧啧啧
+                   //验证码验证 需要手机号
                    //创建或打开现有的数据库
-                   dbHelper=new MyDatabaseHelper(RegisterPhoneActivity.this,"userStore.db",null,1);
-                   SQLiteDatabase db=dbHelper.getWritableDatabase();//返回一个SQLiteDatabase对象
-                   ContentValues values=new ContentValues();
-                   String [] selectionArgs={phoneNumber};
-                   Cursor cursor=db.query("user",null,"phoNumber=?",selectionArgs,null,null,null);
+                   new Thread(new Runnable() {
+                       @Override
+                       public void run() {
+                           try {
 
-                   if (registerOrForget.equals("手机号注册")){
-                       if (cursor.moveToFirst()){
-                           Toast toast=Toast.makeText(getApplicationContext(),"该手机号已注册,跳转至登录界面",Toast.LENGTH_SHORT);
-                           toast.show();
-                       }else{
-                           values.put("phoNumber",phoneNumber);
-                           values.put("password",setpassword);
-                           db.insert("user",null,values);
-                           Toast toast=Toast.makeText(getApplicationContext(),"手机号已成功注册,跳转至登录界面",Toast.LENGTH_SHORT);
-                           toast.show();
-                           delayTime();
-                       }
+                               DBManager manager = DBManager.createInstance();
+                               Connection con = manager.getConnection();
+                               Statement sql = con.createStatement();
+                               ResultSet res = sql.executeQuery("select * from User where ID = " + phoneNumber);
+                               String id = "";
+                               String password = "";
+                               if (res.next()){
+                                   Log.i("TAG", "该账号已存在");
+                                   toast(0);
+                                   return;
+                               }
 
-                   }else if(registerOrForget.equals("忘记密码")){
-                       if (!cursor.moveToFirst()){
-                           Toast toast=Toast.makeText(getApplicationContext(),"该手机号尚未注册，跳转至注册页面",Toast.LENGTH_SHORT);
-                           toast.show();
-                           delayTime();
-                           Intent registerIntent=new Intent(RegisterPhoneActivity.this,RegisterPhoneActivity.class);
-                           registerIntent.putExtra("registerOrForget","手机号注册");
-                           startActivity(registerIntent);
-                       }else{
-                           values.put("password",setpassword);
-                           db.update("user",values,"phoNumber=?",new String[]{phoneNumber});
-                           Toast toast=Toast.makeText(getApplicationContext(),"密码修改成功，跳转至登录界面",Toast.LENGTH_SHORT);
-                           toast.show();
+                               PreparedStatement ps = con.prepareStatement("insert into User(ID,password,name) values (?,?,?)");
+                               ps.setString(1, phoneNumber);
+                               ps.setString(2, setpassword);
+                               ps.setString(3,"用户" + phoneNumber);
+                               ps.executeUpdate();
+                               toast(1);
+                               FriendCircleFragement.userID = phoneNumber;
+
+                               con.close();
+                               sql.close();
+                               res.close();
+
+                           } catch (SQLException e) {
+                               e.printStackTrace();
+                           }
                        }
-                   }
-                   delayTime();
-                   values.clear();
-                   db.close();
-                   Intent intent=new Intent(RegisterPhoneActivity.this,LoginPhoneActivity.class);
-                   startActivity(intent);
+                   }).start();
                }
            }
         });
@@ -111,6 +114,23 @@ public class RegisterPhoneActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+    }
+
+    private void toast(final int type) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (type == 0){
+                    Toast.makeText(RegisterPhoneActivity.this,"该账号已注册", Toast.LENGTH_SHORT).show();
+                } else if (type == 1){
+                    Toast.makeText(RegisterPhoneActivity.this,"注册成功", Toast.LENGTH_SHORT).show();
+                    Intent in = new Intent(RegisterPhoneActivity.this,MainActivity.class);
+                    startActivity(in);
+                    finish();
+                }
+
             }
         });
     }

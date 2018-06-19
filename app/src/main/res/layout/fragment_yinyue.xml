@@ -5,18 +5,17 @@
     android:id="@+id/activity_main2"
     android:orientation="vertical"
     android:paddingBottom="16dp"
-
-    android:paddingRight="16dp"
     android:paddingTop="16dp"
 
     >
 
     <ListView
+        android:layout_marginTop="-10dp"
         android:id="@+id/yinyue_fragment_lv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></ListView>
     <ExpandableListView
-        android:layout_marginLeft="5dp"
+
         android:id="@+id/yinyue_frament_expandableListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></ExpandableListView>

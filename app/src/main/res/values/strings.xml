@@ -21,4 +21,5 @@
     <string name="chang_account">切换帐号</string>
     <string name="setting">设置</string>
     <string name="quit">退出</string>
+    <string name="hint">你喜欢的歌曲、歌手</string>
 </resources>

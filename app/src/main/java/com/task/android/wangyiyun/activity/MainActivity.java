@@ -2,16 +2,20 @@ package com.task.android.wangyiyun.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.task.android.wangyiyun.R;
 import com.task.android.wangyiyun.adapter.MyFragmentPagerAdapter;
@@ -30,13 +34,11 @@ public class MainActivity extends AppCompatActivity {
 
     private NavigationView navigationView;
     private View headerView;
-    private ImageView imageView;
-    private Button button01;
-    private MyDatabaseHelper dbHelper;
-    private LinearLayout settingLinear;
     private LinearLayout loginOutLinear;
     private LinearLayout quitLinear;
-
+    private DrawerLayout drawerLayout;
+    private Button more_btn;
+    private  Button search_bt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +49,25 @@ public class MainActivity extends AppCompatActivity {
 
         //初始化视图
         initViews();
+        more_btn=findViewById(R.id.genduo_main_bt);
+        search_bt=findViewById(R.id.sousuo_main_bt);
+        //getActionBar().hide();//先将原有的标题栏隐藏,不知道有用否 具体干嘛的
+        drawerLayout=(DrawerLayout)findViewById(R.id.drawerLayout);
+        more_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(Gravity.LEFT);
+            }
+        });
+        search_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(MainActivity.this,SearchActivity.class);
+                startActivity(intent);
+            }
+        });
     }
+
 
     private void initViews() {
 
@@ -72,20 +92,47 @@ public class MainActivity extends AppCompatActivity {
         friend.setIcon(R.drawable.pengyou_fragment_selector);
         genduo_bt  = findViewById(R.id.genduo_main_bt);
 
-        genduo_bt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent();
 
-            }
-        });
 
         navigationView=(NavigationView)findViewById(R.id.navigation_view);
         disableNavigationViewScrollbars(navigationView);
         headerView=navigationView.getHeaderView(0);//获得头部控件
-//        button01=(Button)findViewById(R.id.tranTologin);
-//        loginOutLinear=(LinearLayout)findViewById(R.id.loginOutLinear);
-//        quitLinear=(LinearLayout) findViewById(R.id.quitLinear);
+        loginOutLinear=(LinearLayout)findViewById(R.id.loginOutLinear);
+        quitLinear=(LinearLayout)findViewById(R.id.quitLinear);
+
+
+        //退出账户
+        loginOutLinear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this,LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+
+
+        //返回home界面
+        quitLinear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+
+            }
+        });
+
+
+
+
+        //item点击事件
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Toast toast=Toast.makeText(getApplicationContext(),"你好啊",Toast.LENGTH_SHORT);
+                toast.show();
+                return true;
+            }
+        });
 
     }
 

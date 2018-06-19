@@ -10,12 +10,14 @@
        android:layout_height="50dp"
        android:orientation="horizontal"
        android:background="#EA2000"
+       android:paddingLeft="10dp"
        >
      <Button
+         android:id="@+id/back_MusicList_btn"
          android:layout_width="30dp"
          android:layout_height="30dp"
          android:layout_gravity="center_vertical"
-         android:background="@mipmap/arrow_left"
+         android:background="@drawable/back"
 
          />
        <TextView
@@ -23,16 +25,17 @@
            android:layout_height="wrap_content"
            android:layout_gravity="center_vertical"
            android:text="本地音乐"
+           android:textColor="@color/colorWhite"
             android:textSize="18dp"/>
        <Button
-           android:layout_width="30dp"
-           android:layout_height="30dp"
+           android:layout_width="20dp"
+           android:layout_height="20dp"
            android:layout_gravity="center_vertical"
            android:layout_marginLeft="170dp"
            android:background="@mipmap/search"/>
        <Button
-           android:layout_width="30dp"
-           android:layout_height="30dp"
+           android:layout_width="20dp"
+           android:layout_height="20dp"
            android:layout_marginLeft="20dp"
            android:layout_gravity="center_vertical"
            android:background="@mipmap/more"/>
@@ -57,11 +60,19 @@
 
              />
         <android.support.v4.view.ViewPager
-            android:id="@+id/viewPager"
+            android:id="@+id/viewPager_MusicList"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             />
+        <fragment
+            android:id="@+id/playBar_fragement"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:name="com.task.android.wangyiyun.fragement.PlayBarFragment">
+
+        </fragment>
+
     </LinearLayout>
 
 

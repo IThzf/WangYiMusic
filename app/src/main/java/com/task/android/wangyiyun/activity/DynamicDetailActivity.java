@@ -32,6 +32,7 @@ import com.task.android.wangyiyun.bean.CommentInfo;
 import com.task.android.wangyiyun.bean.UserInfo;
 import com.task.android.wangyiyun.dialog.CommentDialog;
 import com.task.android.wangyiyun.fragement.FriendCircleFragement;
+import com.task.android.wangyiyun.util.DBManager;
 import com.task.android.wangyiyun.util.DensityUtil;
 import com.task.android.wangyiyun.util.KeyboardChangeListener;
 import com.zhy.adapter.recyclerview.CommonAdapter;
@@ -39,6 +40,11 @@ import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 import com.zhy.adapter.recyclerview.wrapper.HeaderAndFooterWrapper;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,6 +76,9 @@ public class DynamicDetailActivity extends AppCompatActivity implements View.OnC
     private final int COMMENT_COMMENT = 0; //  代表评论Dynamic
     private CommentInfo mInfo = null;  // 输入框代表的用户信息，将要进入conmment列表
     private String beReplyerName = null;
+    private DBManager manager;
+
+
 
 
     @Override
@@ -106,6 +115,8 @@ public class DynamicDetailActivity extends AppCompatActivity implements View.OnC
             et_dynamic_detail_footer.setFocusable(false);
 
         }
+
+        // 从上个页面获取关于该dynamic的数据，不用重复查询
         Intent intent = getIntent();
         dynamicID = intent.getIntExtra("dynamicInfo", -1); // 获得dynamic的ID
         dynamicPraiseNumber = intent.getIntExtra("dynamicPraiseNumber",0); // 获得dynamic的赞数量
@@ -124,25 +135,26 @@ public class DynamicDetailActivity extends AppCompatActivity implements View.OnC
         }
 
 
-        initPraiseList();   // 初始化评论列表
 
         setSupportActionBar(toolBar);  // 设置toolBar
         Glide.with(this).load(R.drawable.scene).into(iv_comment);
         ll_back.setOnClickListener(this);
 
-        initUserInfoList();  // 初始化赞列表的用户信息
-
-        mrecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-
-        initCommnetInfo(); // 初始化评论列表的用户信息
+        initInfoFromDB();
 
         madapter = new CommonAdapter<CommentInfo>(this, R.layout.rv_item_commentlist, mInfoList) {
             @Override
             protected void convert(ViewHolder holder, CommentInfo commentInfo, int position) {
                 holder.setText(R.id.commentlist_tv_name,commentInfo.getCommenterName());
-                int commenterAvatar = getResource(commentInfo.getCommenterAvatar());
-                holder.setImageResource(R.id.commentlist_userAvatar, commenterAvatar);
-                holder.setText(R.id.commenlist_tv_comment, commentInfo.getComment());
+                //int commenterAvatar = getResource(commentInfo.getCommenterAvatar());
+                holder.setImageResource(R.id.commentlist_userAvatar, R.drawable.wangyiiocn);
+                if (commentInfo.getReplyerID() == null || commentInfo.getReplyerID().equals("")){
+                    holder.setText(R.id.commenlist_tv_comment, commentInfo.getComment());
+                }else {
+                    holder.setText(R.id.commenlist_tv_comment, "@" + commentInfo.getReplyerID() + ":"
+                            + commentInfo.getReply() + "\n回复:" + commentInfo.getComment());
+                }
+
 
             }
         };
@@ -174,7 +186,7 @@ public class DynamicDetailActivity extends AppCompatActivity implements View.OnC
                             // 设置minfo的信息，以便评论或者回复时使用
                             mInfo.setID(FriendCircleFragement.userID);
                             mInfo.setReplyerID(mInfoList.get(position).getID());
-                            mInfo.setRelay(mInfoList.get(position).getComment());
+                            mInfo.setReply(mInfoList.get(position).getComment());
                             mInfo.setCommenterName(mInfoList.get(position).getCommenterName());
                             Log.i(TAG,"  position = " + position + "  commenterName = " + mInfoList.get(position).getCommenterName());
                             // 创建Dialog
@@ -222,6 +234,223 @@ public class DynamicDetailActivity extends AppCompatActivity implements View.OnC
         });
 
     }
+
+
+
+    private boolean hasPraise() {  // 判断此dynamic是否已被赞
+        Intent i = getIntent();
+        int dynamicPraiseNumber = i.getIntExtra("dynamicPraiseNumber", 0); // 获得dynamicActivity页面传递过来的关于dynamic的相关信息
+        if (dynamicPraiseNumber == 0) {
+            hasPraise = false;
+        }
+        Log.i(TAG, "  " + hasPraise);
+        return hasPraise;
+    }
+
+    public void initInfoFromDB(){
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                manager = DBManager.createInstance();
+
+                initUserInfoList();  // 初始化赞列表的用户信息
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mrecyclerView.addItemDecoration(new DividerItemDecoration(DynamicDetailActivity.this, DividerItemDecoration.VERTICAL));
+                    }
+                });
+
+                initCommnetInfo(); // 初始化评论列表的用户信息
+            }
+        }).start();
+
+
+    }
+
+    private void initUserInfoList() {
+        if (hasPraise) {
+            // 初始化linearLayout，用linearLayout动态增加赞的用户的头像
+            ll_praiseList = (LinearLayout) praiseList.findViewById(R.id.item_dynamicdetail_ll_praiselist);
+            userInfoList = new ArrayList<>();
+
+            Log.i(TAG, "  开始连接数据库");
+            new Thread(new Runnable() {
+                @Override
+                public void run() {  // 开启线程连接数据库
+                    try {
+
+                        // 从数据库获取此dynamic的赞的用户
+                        String sql = "select * from user where ID in " +
+                                "(select praiseID  from praise where DID = " + dynamicID + ") order by ID ASC";
+
+                        Connection conn = manager.getConnection();
+                        if (conn == null){
+                            return;
+                        }
+                        Statement stmt = conn.createStatement();
+                        ResultSet res = stmt.executeQuery(sql);
+                        Log.i(TAG, "  SQL 执行成功   ");
+
+                        int i = 0;
+                        while (res.next() && i<8) { // 赞列表最多放八个用户的头像
+                            // 获取点赞用户信息
+                            final UserInfo user = new UserInfo();
+                            user.setID(res.getString("ID"));
+                            user.setName(res.getString("name"));
+                            user.setUserAvatar(res.getString("userAvatar"));
+                            userInfoList.add(user);
+                            // 通知handle更新列表
+                            Message message = handle.obtainMessage();
+                            message.obj = user;
+                            message.what = 1;
+                            handle.sendMessage(message);
+                            i++;
+                            Log.i(TAG, "  数据库查询过程中  " + i + "  " + res.getString("ID"));
+
+                        }
+
+                        Log.i(TAG, "  SQL 执行成功   " + i + " " + dynamicID);
+
+                        res.close();
+                        stmt.close();
+                        conn.close();
+                        //manager.closeDB();
+
+                    } catch (SQLException e) {
+                        Log.e(TAG, "数据库连接失败");
+                    }
+                }
+            }).start();
+
+
+        }
+    }
+
+    private void initCommnetInfo() {  // 初始化评论列表用户的信息
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Connection con = manager.getConnection();
+                    if (con == null){
+                        return;
+                    }
+                    Log.i(TAG, "run: " + con);
+                    Statement stmt = con.createStatement();
+                    Log.i(TAG, "run: " + stmt);
+                    String sql = "select * from comment where DID = " + dynamicID;  // 获取此Dynamic的评论的用户
+                    ResultSet res = stmt.executeQuery(sql);
+                    Log.i(TAG, "run: " + res);
+                    int i = 0;
+                    while (res.next()) {
+                        // 设置用户信息
+                        CommentInfo com = new CommentInfo();
+                        com.setCID(res.getInt("CID"));
+                        com.setID(res.getString("commenterID"));
+                        com.setComment(res.getString("comment"));
+                        com.setPraiseNumber(res.getInt("praiseNumber"));
+                        com.setReplyerID(res.getString("replyerID"));
+                        com.setReply(res.getString("reply"));
+
+                        sql = "select * from user where ID  = " + res.getString("commenterID"); // 获取commenter的昵称和头像
+                        Statement stmt2 = con.createStatement();
+                        ResultSet ress = stmt2.executeQuery(sql);
+                        if (ress.next()){
+                            if (ress.getString("name") == null || ress.getString("name").equals("")){
+                                com.setCommenterName("用户"+ress.getString("ID"));
+                            }else{
+                                com.setCommenterName(ress.getString("name"));
+                            }
+
+                            com.setCommenterAvatar(ress.getString("userAvatar"));
+                        }
+                        ress.close();
+                        mInfoList.add(com);  // 把评论的用户加入到列表中
+                        Log.i(TAG," mInfolist.size = " + mInfoList.size());
+                    }
+                    Log.i(TAG, "run: " + i);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mheaderAdapter.notifyDataSetChanged();  // 更新界面
+                        }
+                    });
+
+                    con.close();
+                    stmt.close();
+                    res.close();
+
+
+                } catch (SQLException e) {
+                    Log.i(TAG,"数据库加载失败");
+                    e.printStackTrace();
+                }
+
+
+            }
+        }).start();
+    }
+
+    private void initPraiseList() {
+    }
+
+
+
+
+    private Handler handle = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            int rate = DensityUtil.dip2px(DynamicDetailActivity.this, 1);
+            switch (msg.what) {
+                case 1:
+                    // 设置点赞列表用户的头像
+                    if (null != userInfoList && null != ll_praiseList) {
+                        UserInfo user = (UserInfo) msg.obj;
+
+                        ImageView iv = new ImageView(DynamicDetailActivity.this);
+
+//                        iv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));  //设置图片宽高
+//                        iv.setImageResource(user.getUserAvatar()); //图片资源/
+                        Log.i("TAG","  " + getResources().getResourceName(R.drawable.wangyiiocn) + "  " + user.getUserAvatar()  );
+                        int userAvatarId = getResource(user.getUserAvatar());
+                        Glide.with(DynamicDetailActivity.this).load(userAvatarId).into(iv);
+//                        if (DynamicDetailActivity.this != null){
+//                            try{
+//                                Glide.with(DynamicDetailActivity.this).load(userAvatarId).into(iv);
+//                            }catch (Exception e){
+//                                e.printStackTrace();
+//                            }
+//                        }
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(35 * rate, 35 * rate);
+                        params.setMargins(0, 0, 3 * rate, 0);
+                        iv.setLayoutParams(params);
+                        ll_praiseList.addView(iv);
+
+                        Log.i(TAG, "  imageView添加成功" + R.drawable.scene + "  " +
+                                DensityUtil.dip2px(DynamicDetailActivity.this, 1));
+                    }
+                    break;
+                case 2:
+                    if (null == mInfoList) {
+                        mInfoList = new ArrayList<>();
+                    }
+                    CommentInfo com = (CommentInfo) msg.obj;
+                    mInfoList.add(com);
+                    mheaderAdapter.notifyDataSetChanged();
+                    Log.i("TAG", "  " + "comment " + msg.arg1);
+
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     private void initEditText() {
 
@@ -299,186 +528,6 @@ public class DynamicDetailActivity extends AppCompatActivity implements View.OnC
 
     }
 
-    private boolean hasPraise() {  // 判断此dynamic是否已被赞
-        Intent i = getIntent();
-        int dynamicPraiseNumber = i.getIntExtra("dynamicPraiseNumber", 0); // 获得dynamicActivity页面传递过来的关于dynamic的相关信息
-        if (dynamicPraiseNumber == 0) {
-            hasPraise = false;
-        }
-        Log.i(TAG, "  " + hasPraise);
-        return hasPraise;
-    }
-
-
-    private void initCommnetInfo() {  // 初始化评论列表用户的信息
-
-//        Intent intent = getIntent();
-//        final int dynamicID = intent.getIntExtra("dynamicInfo", -1);// 获取此dynamic的ID
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    Class.forName("com.mysql.jdbc.Driver");
-//                    Connection con = DriverManager.getConnection(DynamicActivity.aliyunSqlUrl, "root", "h1616408");
-//
-//                    String sql = "select * from comment where DID = ?";  // 获取此Dynamic的评论的用户
-//                    PreparedStatement ps = con.prepareStatement(sql);
-//                    ps.setString(1, dynamicID + "");
-//                    ResultSet res = ps.executeQuery();
-//                    int i = 0;
-//                    while (res.next()) {
-//                        CommentInfo com = new CommentInfo();
-//                        com.setCID(res.getInt("CID"));
-//                        com.setID(res.getString("commenterID"));
-//                        com.setComment(res.getString("comment"));
-//                        com.setPraiseNumber(res.getInt("praiseNumber"));
-//
-//                        sql = "select * from user where ID  = ?"; // 获取commenter的昵称和头像
-//                        ps = con.prepareStatement(sql);
-//                        ps.setString(1,res.getString("commenterID"));
-//                        ResultSet ress = ps.executeQuery();
-//                        if (ress.next()){
-//                            com.setCommenterName(ress.getString("name"));
-//                            com.setCommenterAvatar(ress.getString("userAvatar"));
-//                        }
-//                        mInfoList.add(com);  // 把评论的用户加入到列表中
-//                        Log.i(TAG," mInfolist.size = " + mInfoList.size());
-//                    }
-//
-////                    sql = "select * from user where ID in (select commenterID from comment)";
-////                    Statement st = con.createStatement();
-////                    res = st.executeQuery(sql);
-////                    while (res.next()){
-////                        UserInfo user = new UserInfo();
-////                        user.setName(res.getString("name"));
-////                        user.setUserAvatar(res.getString("userAvatar"));
-////                    }
-//
-//
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            mheaderAdapter.notifyDataSetChanged();  // 更新界面
-//                        }
-//                    });
-//
-//                    con.close();
-//                    ps.close();
-//                    res.close();
-//
-//                } catch (ClassNotFoundException e) {
-//                    e.printStackTrace();
-//                } catch (SQLException e) {
-//                    Log.i(TAG,"数据库加载失败了");
-//                    e.printStackTrace();
-//                }
-//
-//
-//            }
-//        }).start();
-    }
-
-    private void initPraiseList() {
-    }
-
-    private Handler handle = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            int rate = DensityUtil.dip2px(DynamicDetailActivity.this, 1);
-            switch (msg.what) {
-                case 1:
-                    if (null != userInfoList && null != ll_praiseList) {
-                        UserInfo user = (UserInfo) msg.obj;
-
-                        ImageView iv = new ImageView(DynamicDetailActivity.this);
-
-//                        iv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));  //设置图片宽高
-//                        iv.setImageResource(user.getUserAvatar()); //图片资源/
-                        Log.i("TAG","  " + getResources().getResourceName(R.drawable.wangyiiocn) + "  " + user.getUserAvatar()  );
-                        int userAvatarId = getResource(user.getUserAvatar());
-                        Glide.with(DynamicDetailActivity.this).load(userAvatarId).into(iv);
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(35 * rate, 35 * rate);
-                        params.setMargins(0, 0, 3 * rate, 0);
-                        iv.setLayoutParams(params);
-                        ll_praiseList.addView(iv);
-
-                        Log.i(TAG, "  imageView添加成功" + R.drawable.scene + "  " +
-                                DensityUtil.dip2px(DynamicDetailActivity.this, 1));
-                    }
-                    break;
-                case 2:
-                    if (null == mInfoList) {
-                        mInfoList = new ArrayList<>();
-                    }
-                    CommentInfo com = (CommentInfo) msg.obj;
-                    mInfoList.add(com);
-                    mheaderAdapter.notifyDataSetChanged();
-                    Log.i("TAG", "  " + "comment " + msg.arg1);
-
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
-    private void initUserInfoList() {
-//        if (hasPraise) {
-//            // 初始化linearLayout，用linearLayout动态增加赞的用户的头像
-//            ll_praiseList = (LinearLayout) praiseList.findViewById(R.id.item_dynamicdetail_ll_praiselist);
-//            userInfoList = new ArrayList<>();
-//
-//            Log.i(TAG, "  开始连接数据库");
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {  // 开启线程连接数据库
-//                    try {
-//                        Class.forName("com.mysql.jdbc.Driver");
-//                        Connection con = DriverManager.getConnection(DynamicActivity.aliyunSqlUrl, "root", "h1616408");
-//
-//                        Log.i(TAG,"数据库加载成功  DynamicId: " + dynamicID);
-//                        // 从数据库获取此dynamic的赞的用户
-//                        String sql = "select * from user where ID in " +
-//                                "(select praiseID  from praise where DID = ?) order by ID ASC";
-////                        ResultSet res = st.executeQuery(sql);
-//                        PreparedStatement ps = con.prepareStatement(sql);
-//
-//                        ps.setString(1, dynamicID + "");
-//                        ResultSet res = ps.executeQuery();
-//                        Log.i(TAG, "  SQl 执行成功   ");
-//
-//                        int i = 0;
-//                        while (res.next() && i<8) { // 赞列表最多放八个用户的头像
-//                            final UserInfo user = new UserInfo();
-//                            user.setID(res.getString("ID"));
-//                            user.setName(res.getString("name"));
-//                            user.setUserAvatar(res.getString("userAvatar"));
-//                            userInfoList.add(user);
-//                            Message message = handle.obtainMessage();
-//                            message.obj = user;
-//                            message.what = 1;
-//                            handle.sendMessage(message);
-//                            i++;
-//                            Log.i(TAG, "  数据库查询过程中  " + i + "  " + res.getString("ID"));
-//
-//                        }
-//
-//                        con.close();
-//                        ps.close();
-//                        res.close();
-//
-//                    } catch (SQLException e) {
-//                        Log.e(TAG, "数据库连接失败");
-//                    } catch (ClassNotFoundException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }).start();
-//
-//
-//        }
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -487,11 +536,11 @@ public class DynamicDetailActivity extends AppCompatActivity implements View.OnC
                 break;
             case R.id.dynamic_detail_et_footer:
                 if (FriendCircleFragement.userID == null){
-                    // 如果当前为游客状态，点击评论时跳转到登录页面
-//                    if (FriendCircleFragement.userID == null){
-//                        Intent ii = new Intent(this,LoginActivity.class);
-//                        startActivity(ii);
-//                    }
+                     //如果当前为游客状态，点击评论时跳转到登录页面
+                    if (FriendCircleFragement.userID == null){
+                        Intent ii = new Intent(this,LoginActivity.class);
+                        startActivity(ii);
+                    }
                 }
 
                 break;
@@ -530,8 +579,8 @@ public class DynamicDetailActivity extends AppCompatActivity implements View.OnC
 
     private void IntentToLogin() {
         // 如果当前为游客状态，点击评论时跳转到登录页面
-//            Intent ii = new Intent(this,LoginActivity.class);
-//            startActivity(ii);
+            Intent ii = new Intent(this,LoginActivity.class);
+            startActivity(ii);
     }
 
     private void updatePraise() {
@@ -571,62 +620,61 @@ public class DynamicDetailActivity extends AppCompatActivity implements View.OnC
     }
 
     private void sendComment(final String com) {
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    Class.forName("com.mysql.jdbc.Driver");
-//                    Connection con = DriverManager.getConnection(DynamicActivity.aliyunSqlUrl, "root", "h1616408");
-//                    String sql = "insert into comment(DID,CID,commenterID,comment,replyerID,reply,praiseNumber) values" +
-//                            "(?,?,?,?,?,?,0)";
-//                    PreparedStatement ps = con.prepareStatement(sql);
-//                    ps.setInt(1,dynamicID);
-//                    int CID = mInfoList.size() + 1;
-//                    ps.setInt(2,CID);
-//                    String commenterID = DynamicActivity.userID;
-//                    ps.setString(3,commenterID);
-//
-//                    String comment = com;
-//                    Log.i(TAG,"Comment:" + com);
-//                    ps.setString(4,comment);
-//
-//                    if (mInfo.getReplyerID() != null){
-//                        ps.setString(5,mInfo.getReplyerID());
-//                        ps.setString(6,mInfo.getRelay());
-//                    } else {
-//                        ps.setString(5,null);
-//                        ps.setString(6,null);
-//                    }
-//
-//                    ps.execute();
-//
-//                    mInfo.setDID(dynamicID);
-//                    mInfo.setCID(CID);
-//                    mInfo.setComment(comment);
-//                    mInfo.setID(commenterID);
-//                    mInfo.setPraiseNumber(0);
-//                    mInfo.setCommenterAvatar(DynamicActivity.userAvatar);
-//                    mInfoList.add(mInfo);
-//                    mInfo.setCommenterAvatar(DynamicActivity.userAvatar);
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            mheaderAdapter.notifyDataSetChanged();
-//                        }
-//                    });
-//
-//                    ps.close();
-//                    con.close();
-//
-//                } catch (ClassNotFoundException e) {
-//                    e.printStackTrace();
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
-//
-//
-//            }
-//        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    Connection con = manager.getConnection();
+
+                    String sql = "insert into comment(DID,CID,commenterID,comment,replyerID,reply,praiseNumber) values" +
+                            "(?,?,?,?,?,?,0)";
+                    PreparedStatement ps = con.prepareStatement(sql);
+                    ps.setInt(1,dynamicID);
+                    int CID = mInfoList.size() + 1;
+                    ps.setInt(2,CID);
+                    String commenterID = FriendCircleFragement.userID;
+                    ps.setString(3,commenterID);
+
+                    String comment = com;
+                    Log.i(TAG,"Comment:" + com);
+                    ps.setString(4,comment);
+
+                    if (mInfo.getReplyerID() != null){
+                        ps.setString(5,mInfo.getReplyerID());
+                        ps.setString(6,mInfo.getReply());
+                    } else {
+                        ps.setString(5,null);
+                        ps.setString(6,null);
+                    }
+
+                    ps.execute();
+
+                    mInfo.setDID(dynamicID);
+                    mInfo.setCID(CID);
+                    mInfo.setComment(comment);
+                    mInfo.setID(commenterID);
+                    mInfo.setPraiseNumber(0);
+                    mInfo.setCommenterAvatar("drawable/wangyiiocn");
+                    mInfoList.add(mInfo);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mheaderAdapter.notifyDataSetChanged();
+                        }
+                    });
+
+                    ps.close();
+                    con.close();
+
+                }  catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }).start();
 
     }
 

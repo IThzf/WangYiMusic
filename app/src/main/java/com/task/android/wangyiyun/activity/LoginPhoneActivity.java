@@ -1,8 +1,6 @@
 package com.task.android.wangyiyun.activity;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -11,8 +9,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.task.android.wangyiyun.R;
 
+import com.task.android.wangyiyun.R;
+import com.task.android.wangyiyun.fragement.FriendCircleFragement;
+import com.task.android.wangyiyun.util.DBManager;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -27,32 +32,20 @@ public class LoginPhoneActivity extends AppCompatActivity {
     private EditText passEditText;
     private String phoneNumber;
     private String password;
-    private MyDatabaseHelper dbHelper;
     private String checkPassword;
     private TextView forgetPassword;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_phonum_layout);
+
         //实例化
         backButtonLogin=(Button)findViewById(R.id.backButtonLogin);
         loginButton=(Button)findViewById(R.id.loginButton);
         phoneEditText=(EditText)findViewById(R.id.phoneEditText);
         passEditText=(EditText)findViewById(R.id.passEditText);
         forgetPassword=(TextView)findViewById(R.id.forgetPassword);
-        //
 
-
-       //每个程序都有自己的数据库，默认情况下是各自互相不干扰
-        //创建一个数据库，并且打开
-     /*   SQLiteDatabase db=openOrCreateDatabase("user.db",MODE_PRIVATE,null);
-        db.execSQL("create table if not exists usertb(_id integer primary key autoincrement,phonumber integer not null,password text not null)");
-        ContentValues values=new ContentValues();
-        values.put("phonumber","12345678910");
-        values.put("password","123456");
-        db.insert("usertb",null,values);
-        values.clear();
-        db.close();*/
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,39 +54,15 @@ public class LoginPhoneActivity extends AppCompatActivity {
                 /*setEditable(phoneEditText,11,true);*/
 
                 if(phoneNumber.length()<11 || phoneNumber.length()>11 ){
-                    Toast toast=Toast.makeText(getApplicationContext(),"请输入11位数字的手机号",Toast.LENGTH_SHORT);
+                    Toast toast= Toast.makeText(getApplicationContext(),"请输入11位数字的手机号", Toast.LENGTH_SHORT);
                     toast.show();
                 }else if(password.length()==0){
-                    Toast toast=Toast.makeText(getApplicationContext(),"请输入密码",Toast.LENGTH_SHORT);
+                    Toast toast= Toast.makeText(getApplicationContext(),"请输入密码", Toast.LENGTH_SHORT);
                     toast.show();
                 }
                 else {
-                    //数据库验证
-                    //创建或打开现有的数据库
-                    dbHelper=new MyDatabaseHelper(LoginPhoneActivity.this,"userStore.db",null,1);
-                    SQLiteDatabase db=dbHelper.getWritableDatabase();
-                   /* String tiaojian="phoNumber=? and password=?";*/
-                    String [] selectionArgs={phoneNumber};
-                    Cursor cursor=db.query("user",null,"phoNumber=?",selectionArgs,null,null,null);
-                    if (cursor.moveToFirst()){
-                        checkPassword=cursor.getString(cursor.getColumnIndex("password"));
-                        if (password.equals(checkPassword)){
-                            Intent intent=new Intent(LoginPhoneActivity.this,NavigationActivity.class);
-                            startActivity(intent);
-                        }else
-                        {
-                            Toast toast2=Toast.makeText(getApplicationContext(),"用户名或密码错误"+checkPassword+" "+password,Toast.LENGTH_SHORT);
-                            toast2.show();
-                            passEditText.setText("");
-                        }
-                    }else{
-                        Toast toast=Toast.makeText(getApplicationContext(),"该手机号尚未注册，跳转至注册页面",Toast.LENGTH_SHORT);
-                        toast.show();
-                        delayTime();
-                        Intent registerIntent=new Intent(LoginPhoneActivity.this,RegisterPhoneActivity.class);
-                        registerIntent.putExtra("registerOrForget","手机号注册");
-                        startActivity(registerIntent);
-                    }
+
+                    login();
 
                 }
 
@@ -119,6 +88,78 @@ public class LoginPhoneActivity extends AppCompatActivity {
         });
 
     }
+
+
+    private void login() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // 建立数据库连接
+                    DBManager manager = DBManager.createInstance();
+                    Connection conn = manager.getConnection();
+
+                    Statement sql = conn.createStatement();
+                    ResultSet res = sql.executeQuery("select * from User");
+
+                    String ID = phoneEditText.getText().toString();
+                    String Password = passEditText.getText().toString();
+
+                    String id = "";
+                    String password = "";
+
+                    boolean flag = true;
+                    while (res.next()){
+                        id = res.getString("ID");
+                        password = res.getString("password");
+
+                        if (ID.equals(id)){
+                            if (Password.equals(password)){
+                                toast(1);
+                            } else {
+                                toast(0);
+                            }
+
+                            flag = false;
+                        }
+                    }
+
+                    if (flag){
+                        toast(0);
+                    }
+
+                    conn.close();
+                    sql.close();
+                    res.close();
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+    }
+
+    public void toast(final int type) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (type == 0){
+                    Toast.makeText(LoginPhoneActivity.this,"用户名或密码错误", Toast.LENGTH_SHORT).show();
+                } else if (type == 1){
+                    Toast.makeText(LoginPhoneActivity.this,"登录成功", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginPhoneActivity.this,MainActivity.class);
+                    intent.putExtra("userID",phoneEditText.getText().toString());  // 向登录后的页面发送userId，用来获取用户的头像以及点赞等信息
+                    intent.putExtra("fromLogin","login");
+                    FriendCircleFragement.userID = phoneEditText.getText().toString();
+                    setResult(RESULT_OK,intent);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
+    }
+
     private void delayTime(){
         //延时操作
         TimerTask task=new TimerTask() {
@@ -128,7 +169,7 @@ public class LoginPhoneActivity extends AppCompatActivity {
             }
         };
         Timer timer=new Timer();
-        timer.schedule(task,20000);
+        timer.schedule(task,2000);
     }
 
     //实现当输入到最大值时则不允许再输入 没看懂

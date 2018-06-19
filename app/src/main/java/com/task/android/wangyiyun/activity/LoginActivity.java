@@ -9,7 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.task.android.wangyiyun.R;
+
 /**
  * Created by xue on 2018/5/14.
  */
@@ -49,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
           textView01.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View v) {
-                  Intent intent=new Intent(LoginActivity.this,NavigationActivity.class);
+                  Intent intent=new Intent(LoginActivity.this,MainActivity.class);
                   startActivity(intent);
               }
           });

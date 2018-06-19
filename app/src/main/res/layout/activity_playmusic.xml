@@ -14,11 +14,11 @@
             android:layout_height="48dp">
             <ImageButton
                 android:id="@+id/backmain_play_ib"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="5dp"
-                android:background="@drawable/ic_back" />
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/back"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -32,7 +32,7 @@
                     android:layout_height="24dp"
                     android:layout_centerInParent="true"
                     android:layout_marginLeft="10dp"
-
+                    android:gravity="center_vertical"
                     android:text="music"
                     android:textColor="#ffffff"
                     android:textSize="15dp" />
@@ -42,6 +42,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="24dp"
                     android:layout_centerInParent="true"
+                    android:gravity="center_vertical"
                     android:layout_marginLeft="10dp"
                     android:text="author"
                     android:textColor="#ffffff"
@@ -54,7 +55,8 @@
                 android:layout_height="25dp"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/ic_share" />
+                android:layout_marginRight="15dp"
+                android:background="@drawable/share" />
         </RelativeLayout>
 
         <View

@@ -8,7 +8,7 @@ public class CommentInfo {
     private int DID;
     private int CID;
     private String replyerID;
-    private String relay;
+    private String reply;
     private String comment;
     private int praiseNumber;
     private String commenterName;
@@ -72,12 +72,12 @@ public class CommentInfo {
         this.replyerID = replyerID;
     }
 
-    public String getRelay() {
-        return relay;
+    public String getReply() {
+        return reply;
     }
 
-    public void setRelay(String relay) {
-        this.relay = relay;
+    public void setReply(String reply) {
+        this.reply = reply;
     }
 
     public String getCommenterName() {

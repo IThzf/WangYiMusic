@@ -40,13 +40,16 @@ public class PlayMusicActivity extends AppCompatActivity {
             next_play_btn,cycle_play_btn,single_play_btn,cele_btn,cancelcele_btn;
     private TextView musicname_play_text,musicauthor_play_text,time_play_text,alltime_play_text;
     private SeekBar mseekbar_play;
-    private MediaPlayer mediaPlayer;
+    public static MediaPlayer mediaPlayer;
     private ArrayList<MusicMedia> myList;
-    private int position;
     private int allNum;
     private Handler handler;
     private boolean flag = false;
     private int time = 0;
+    private static final String TAG = "PlayMusicActivity";
+    public static boolean flag2 = false;
+    public static int position = -1;
+    public static int curTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +57,26 @@ public class PlayMusicActivity extends AppCompatActivity {
         setContentView(R.layout.activity_playmusic);
         InitPlay();
         InitView();
+
+
+        //pauseMethod();
+        Intent intent = getIntent();
+        int position2 = 0;
+        position2 = intent.getIntExtra("position",0);
+        if (position != position2){
+            Log.i(TAG, "onCreate: " + position);
+            position = position2;
+            if (mediaPlayer.isPlaying())
+            {
+                mediaPlayer.stop();
+            }
+            playMethod(position2);
+        }else{
+
+            time = mediaPlayer.getCurrentPosition();
+            playMethod(position2);
+        }
+
 
         //耳机拔出时暂停播放
         registerHeadsetPlugReceiver();
@@ -95,17 +118,19 @@ public class PlayMusicActivity extends AppCompatActivity {
 
         mseekbar_play = (SeekBar)findViewById(R.id.mseekbar_play_sb);
 
-        mediaPlayer = new MediaPlayer();
+        if (mediaPlayer == null){
+            mediaPlayer = new MediaPlayer();
+        }
 
-        position = 0;
+        //position = 0;
         allNum = 0;
 
         handler = new Handler();
 
-        musicname_play_text.setText(myList.get(position).getTitle());
-        musicauthor_play_text.setText(myList.get(position).getArtist());
-        alltime_play_text.setText(toTime(myList.get(position).getTime()));
-        mseekbar_play.setMax((int) myList.get(position).getTime());
+//        musicname_play_text.setText(myList.get(position).getTitle());
+//        musicauthor_play_text.setText(myList.get(position).getArtist());
+//        alltime_play_text.setText(toTime(myList.get(position).getTime()));
+//        mseekbar_play.setMax((int) myList.get(position).getTime());
         mseekbar_play.getThumb().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
     }
@@ -202,7 +227,7 @@ public class PlayMusicActivity extends AppCompatActivity {
         flag = true;
         cycle_play_btn.setVisibility(View.GONE);
         single_play_btn.setVisibility(View.VISIBLE);
-        Toast.makeText(PlayMusicActivity.this,"单曲循环",Toast.LENGTH_LONG).show();
+        Toast.makeText(PlayMusicActivity.this,"单曲循环", Toast.LENGTH_LONG).show();
     }
 
     //从单曲循环变为列表循环
@@ -210,7 +235,7 @@ public class PlayMusicActivity extends AppCompatActivity {
         flag = false;
         cycle_play_btn.setVisibility(View.VISIBLE);
         single_play_btn.setVisibility(View.GONE);
-        Toast.makeText(PlayMusicActivity.this,"列表循环",Toast.LENGTH_LONG).show();
+        Toast.makeText(PlayMusicActivity.this,"列表循环", Toast.LENGTH_LONG).show();
     }
 
     //下一首
@@ -259,6 +284,7 @@ public class PlayMusicActivity extends AppCompatActivity {
         pause_play_btn.setVisibility(View.GONE);
 
         if (mediaPlayer.isPlaying()){
+            flag2 = false;
             mediaPlayer.pause();
             time = mediaPlayer.getCurrentPosition();
         }
@@ -269,11 +295,12 @@ public class PlayMusicActivity extends AppCompatActivity {
         pause_play_btn.setVisibility(View.VISIBLE);
         play_play_btn.setVisibility(View.GONE);
 
+
         mediaPlayer.reset();
 
         if (!mediaPlayer.isPlaying()){
             try {
-
+                flag2 = true;
                 mediaPlayer.setDataSource(myList.get(position).getUrl());
                 Log.i("TAG", "scanAudioFiles: " + position);
                 mediaPlayer.prepare();
@@ -322,6 +349,7 @@ public class PlayMusicActivity extends AppCompatActivity {
         public void run() {
             // 获得歌曲现在播放位置并设置成播放进度条的值
             if (mediaPlayer != null) {
+                Log.i("TAG", "run: " + mediaPlayer.getCurrentPosition());
                 mseekbar_play.setProgress(mediaPlayer.getCurrentPosition());
                 time_play_text.setText(toTime(mediaPlayer.getCurrentPosition()));
                 // 每次延迟100毫秒再启动线程
@@ -347,6 +375,7 @@ public class PlayMusicActivity extends AppCompatActivity {
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             int progress = seekBar.getProgress();
+            time = progress;
             mediaPlayer.seekTo(progress);
 
         }
@@ -380,7 +409,7 @@ public class PlayMusicActivity extends AppCompatActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     myList = scanAllAudioFiles();
                 } else {
-                    Toast.makeText(this,"拒绝权限将无法使用程序",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"拒绝权限将无法使用程序", Toast.LENGTH_SHORT).show();
                     finish();
                 }
                 break;
@@ -395,14 +424,14 @@ public class PlayMusicActivity extends AppCompatActivity {
         ArrayList<MusicMedia> mylist = new ArrayList<MusicMedia>();
 
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                null,null,null,MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
+                null,null,null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
         int i = 0;
-        Log.i("TAG", "scanAllAudioFiles: " + cursor);
+        //Log.i("TAG", "scanAllAudioFiles: " + cursor);
         if(cursor.moveToFirst()){
-            Log.i("TAG", "scanAllAudioFiles: " + i);
+           // Log.i("TAG", "scanAllAudioFiles: " + i);
             while(!cursor.isAfterLast()){
                 i++;
-                Log.i("TAG", "scanAllAudioFiles: " + i);
+             //   Log.i("TAG", "scanAllAudioFiles: " + i);
                 //歌曲编号
                 long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
                 //歌曲标题
@@ -419,7 +448,7 @@ public class PlayMusicActivity extends AppCompatActivity {
                 //歌曲文件的大小
                 long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
 
-                if(size > 1024*800){//大于800K
+                if(size > 1024*4000 && size < 1024*10000){//大于800K
                     MusicMedia musicMedia = new MusicMedia();
                     musicMedia.setId(id);
                     musicMedia.setArtist(artist);

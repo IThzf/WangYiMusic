@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#ff0000"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/search_bt"
+            android:background="@drawable/fanhuijian1"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="10dp"/>
+        <EditText
+            android:layout_marginLeft="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint"/>
+    </LinearLayout>
+    <TextView
+        android:text="热门搜索"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:text="世界杯"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content" />
+        <Button
+            android:text="薛之谦"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content" />
+        <Button
+            android:text="父亲写的散文诗"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:text="毛不易"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content" />
+        <Button
+            android:text="蔡徐坤"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content" />
+        <Button
+            android:text="9277"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:text="李荣浩"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content" />
+        <Button
+            android:text="房东的猫"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:text="纸短情长"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>
